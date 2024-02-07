@@ -1,0 +1,92 @@
+import tkinter as tk
+from tkinter import Label, Button, Canvas, Scrollbar
+from PIL import Image, ImageTk
+import requests
+from io import BytesIOq1a   
+import webbrowser
+
+class NetflixHomePage:
+    def init(self, root):
+        self.root = root
+        self.root.title("Netflix Home Page")
+        self.root.geometry("500x1500")
+
+        # Background color for the entire window
+        self.root.configure(bg="#000000")
+
+        # Create a Canvas and add a Scrollbar
+        self.canvas = Canvas(root, bg="#121212")
+        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        scrollbar = Scrollbar(root, command=self.canvas.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.canvas.configure(yscrollcommand=scrollbar.set)
+
+        # Frame for content with a different background color
+        self.content_frame = tk.Frame(self.canvas, bg="#121212")
+        self.content_frame.bind("<Configure>", self.on_frame_configure)
+
+        # Add the content frame to the canvas
+        self.canvas.create_window((0, 0), window=self.content_frame, anchor=tk.NW)
+
+        # Netflix Logo
+        self.netflix_logo = Label(self.content_frame, text="Netflix", font=("Helvetica", 56, "bold"), fg="#e50914", bg="#121212")
+        self.netflix_logo.pack(pady=20)
+
+        # Featured Content
+        self.featured_label = Label(self.content_frame, text="Featured", font=("Helvetica", 36, "bold"), fg="#ffffff", bg="#121212")
+        self.featured_label.pack(pady=10)
+
+        # Movie/Show Posters with Photos from Online URLs
+        avatar_url = "https://th.bing.com/th/id/OIP.NNDzj9c4s1ntnvDOwTDNagHaLH?rs=1&pid=ImgDetMain"  # Replace with the actual URL
+        avatar_image = self.load_image_from_url(avatar_url)
+        self.poster1 = Button(self.content_frame, image=avatar_image, text="AVATAR", bg="#121212", fg="#ffffff", compound="top", font=("Helvetica", 25, "bold"), command=lambda: self.open_movie_link("AVATAR"))
+        self.poster1.image = avatar_image
+        self.poster1.pack(pady=15)
+
+        barbie_url = "https://th.bing.com/th/id/OIP.FolSpnaANsEVThUEV7OihgHaEK?rs=1&pid=ImgDetMain"  # Replace with the actual URL
+        barbie_image = self.load_image_from_url(barbie_url)
+        self.poster2 = Button(self.content_frame, image=barbie_image, text="BARBIE", bg="#121212", fg="#ffffff", compound="top", font=("Helvetica", 25, "bold"), command=lambda: self.open_movie_link("BARBIE"))
+        self.poster2.image = barbie_image
+        self.poster2.pack(pady=15)
+
+        # Buttons
+        self.play_button = Button(self.content_frame, text="Play", command=self.play_video, bg="#e50914", fg="#ffffff", font=("Helvetica", 50, "bold"))
+        self.play_button.pack(pady=30)
+
+        self.exit_button = Button(self.content_frame, text="Exit", command=root.destroy, bg="#333333", fg="#ffffff", font=("Helvetica", 40, "bold"))
+        self.exit_button.pack(pady=30)
+
+    def on_frame_configure(self, event):
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+
+    def open_movie_link(self, movie_title):
+        # Open the movie link based on the clicked movie title
+        if movie_title == "AVATAR":
+            webbrowser.open("https://www.youtube.com/watch?v=CfwH_PPTOoc")
+        elif movie_title == "BARBIE":
+            webbrowser.open("https://www.youtube.com/watch?v=H3DtF0Xgtqo")
+        # Add more movie titles and their links as needed
+
+    def play_video(self):
+        # Open the YouTube link in the default web browser
+        webbrowser.open("https://www.youtube.com/watch?v=ksUqKfSITjU")
+
+    @staticmethod
+    def load_image_from_url(url):
+        response = requests.get(url)
+        
+        try:
+            response.raise_for_status()
+            image_data = BytesIO(response.content)
+            image = Image.open(image_data)
+            photo_image = ImageTk.PhotoImage(image)
+            return photo_image
+        except Exception as e:
+            print(f"Error loading image from {url}: {e}")
+            return None
+
+if name == "main":
+    root = tk.Tk()
+    netflix_interface = NetflixHomePage(root)
+    root.mainloop()
